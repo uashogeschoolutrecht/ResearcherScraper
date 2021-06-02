@@ -5,7 +5,7 @@ import csv
 
 csv_file = open('OnderzoekersHU.csv', 'w', newline='')
 csv_writer = csv.writer(csv_file)
-csv_writer.writerow(['Naam','Lectoraat', 'telefoon nummer','e-mail adres'])
+csv_writer.writerow(['Naam','Functie','Lectoraat', 'telefoon nummer','e-mail adres'])
 
 baseurl = "https://www.hu.nl"
 url = 'https://www.hu.nl/api/search/researchers'
@@ -32,9 +32,15 @@ for page in range(1, lastpage_list+1):
         baseSource = requests.get(baseurl + url1).text
         baseSoup = BeautifulSoup(baseSource, 'lxml')
         links = baseSoup.find_all(class_='person-sidebar__links__item')
+        Function = ""
         Lectoraat = ""
         EMail = ""
         Telefoon = ""
+        try:
+            Function = baseSoup.find(class_='person-sidebar__title').text
+            print('Functie: {0}'.format(Function))
+        except:
+            print('Could not find a function')
 
         for link in links:
             label = link.find(class_='person-sidebar__links__item__title')
@@ -47,6 +53,6 @@ for page in range(1, lastpage_list+1):
             elif (label.text == "Telefoon"):
                 Telefoon = link.find(class_='person-sidebar__links__item__link').text
                 print('Telefoon: {}'.format(Telefoon))
-        csv_writer.writerow([Name, Lectoraat, Telefoon, EMail])
+        csv_writer.writerow([Name,Function ,Lectoraat, Telefoon, EMail])
 
 csv_file.close()
